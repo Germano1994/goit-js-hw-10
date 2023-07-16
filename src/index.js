@@ -3,15 +3,12 @@ import SlimSelect from 'slim-select';
 import Notiflix from 'notiflix';
 
 const breedSelect = document.getElementById('breed-select');
-const loader = document.getElementById('loader');
-const catInfo = document.getElementById('cat-info');
-const catImage = document.getElementById('cat-image');
-const catBreed = document.getElementById('cat-breed');
-const catDescription = document.getElementById('cat-description');
-const catTemperament = document.getElementById('cat-temperament');
+const loader = document.querySelector('.loader');
 const error = document.getElementById('error');
+const catInfo = document.querySelector('.cat-info');
 
-axios.defaults.headers.common['x-api-key'] = 'live_bbSmbWd4LO9F9gCofL8a7JnNnUrFCOQWnS7je4DpFmM1scOOeEW58Q1N4NYsjYvN';
+axios.defaults.headers.common['x-api-key'] =
+  'live_bbSmbWd4LO9F9gCofL8a7JnNnUrFCOQWnS7je4DpFmM1scOOeEW58Q1N4NYsjYvN';
 
 function showLoader() {
   loader.style.display = 'block';
@@ -23,7 +20,6 @@ function hideLoader() {
 
 function showError() {
   error.style.display = 'block';
-  Notiflix.Notify.failure('Oops! Something went wrong!');
 }
 
 function hideError() {
@@ -43,9 +39,8 @@ async function fetchBreeds() {
       .join('');
     breedSelect.innerHTML = catsInfo;
 
-    new SlimSelect({
-      select: '#breed-select',
-      placeholder: 'Оберіть породу'
+    new SlimSelect('#breed-select', {
+      placeholder: 'Select a breed'
     });
   } catch (error) {
     showError();
@@ -59,13 +54,17 @@ async function fetchCatByBreed(breedId) {
   hideError();
 
   try {
-    const response = await axios.get(`https://api.thecatapi.com/v1/images/search?breed_ids=${breedId}`);
+    const response = await axios.get(
+      `https://api.thecatapi.com/v1/images/search?breed_ids=${breedId}`
+    );
     const catData = response.data[0];
 
-    catImage.src = catData.url;
-    catBreed.textContent = catData.breeds[0].name;
-    catDescription.textContent = catData.breeds[0].description;
-    catTemperament.textContent = `Темперамент: ${catData.breeds[0].temperament}`;
+    catInfo.innerHTML = `
+      <img src="${catData.url}" alt="Cat Image" class="cat-image">
+      <p><strong>Breed:</strong> ${catData.breeds[0].name}</p>
+      <p><strong>Description:</strong> ${catData.breeds[0].description}</p>
+      <p><strong>Temperament:</strong> ${catData.breeds[0].temperament}</p>
+    `;
 
     catInfo.style.display = 'block';
   } catch (error) {
@@ -81,6 +80,3 @@ breedSelect.addEventListener('change', async (event) => {
 });
 
 fetchBreeds();
-
-
-
