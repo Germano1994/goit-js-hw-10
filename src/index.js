@@ -1,5 +1,6 @@
 import axios from 'axios';
 import SlimSelect from 'slim-select';
+import Notiflix from 'notiflix';
 
 const breedSelect = document.getElementById('breed-select');
 const loader = document.getElementById('loader');
@@ -22,6 +23,7 @@ function hideLoader() {
 
 function showError() {
   error.style.display = 'block';
+  Notiflix.Notify.failure('Oops! Something went wrong!');
 }
 
 function hideError() {
@@ -79,5 +81,6 @@ breedSelect.addEventListener('change', async (event) => {
 });
 
 fetchBreeds();
+
 
 
