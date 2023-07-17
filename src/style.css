@@ -17,4 +17,9 @@
       transform: rotate(360deg);
     }
   }
+
+  .cat-image {
+    width: 400px;
+    max-height: 400px;
+  }
   

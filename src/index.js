@@ -2,13 +2,17 @@ import axios from 'axios';
 import SlimSelect from 'slim-select';
 import Notiflix from 'notiflix';
 
+ new SlimSelect('#breed-select', {
+      placeholder: 'Select a breed'
+    });
+
 const breedSelect = document.getElementById('breed-select');
 const loader = document.querySelector('.loader');
 const error = document.getElementById('error');
 const catInfo = document.querySelector('.cat-info');
 
 axios.defaults.headers.common['x-api-key'] =
-  'live_bbSmbWd4LO9F9gCofL8a7JnNnUrFCOQWnS7je4DpFmM1scOOeEW58Q1N4NYsjYvN';
+  'live_bbSmbWd4LO9F9gCofL8a7JnNnUrFCOQWnS7je4DpFmM1scOOeEW58Q1N4NYsjYvB';
 
 function showLoader() {
   loader.style.display = 'block';
@@ -26,36 +30,14 @@ function hideError() {
   error.style.display = 'none';
 }
 
-async function fetchBreeds() {
-  showLoader();
-  hideError();
-
-  try {
-    const response = await axios.get('https://api.thecatapi.com/v1/breeds');
-    const breeds = response.data;
-
-    const catsInfo = breeds
-      .map(({ id, name }) => `<option value="${id}">${name}</option>`)
-      .join('');
-    breedSelect.innerHTML = catsInfo;
-
-    new SlimSelect('#breed-select', {
-      placeholder: 'Select a breed'
-    });
-  } catch (error) {
-    showError();
-  }
-
-  hideLoader();
-}
-
 async function fetchCatByBreed(breedId) {
   showLoader();
   hideError();
 
   try {
     const response = await axios.get(
-      `https://api.thecatapi.com/v1/images/search?breed_ids=${breedId}`
+      `https://api.thecatapi.com/v1/images/search?breed_id=${breedId}`
+      
     );
     const catData = response.data[0];
 
@@ -74,9 +56,32 @@ async function fetchCatByBreed(breedId) {
   hideLoader();
 }
 
+async function fetchBreeds() {
+  showLoader();
+  hideError();
+
+  try {
+    const response = await axios.get('https://api.thecatapi.com/v1/breeds');
+    const breeds = response.data;
+
+    const catsInfo = breeds
+      .map(({ id, name }) => `<option value="${id}">${name}</option>`)
+      .join('');
+    breedSelect.innerHTML = catsInfo;
+
+   
+  } catch (error) {
+    showError();
+  }
+
+  hideLoader();
+}
+
 breedSelect.addEventListener('change', async (event) => {
   const breedId = event.target.value;
   await fetchCatByBreed(breedId);
 });
 
 fetchBreeds();
+
+
