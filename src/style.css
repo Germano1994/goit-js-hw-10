@@ -22,4 +22,12 @@
     width: 400px;
     max-height: 400px;
   }
+
+  #breed-select {
+    display: none;
+  }
+  
+  .loader {
+    display: none;
+  }
   

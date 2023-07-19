@@ -1,6 +1,7 @@
 import axios from 'axios';
 import SlimSelect from 'slim-select';
-import Notiflix from 'notiflix';
+import {fetchBreeds} from "./cat-api";
+import {fetchCatByBreed} from "./cat-api";
 
  new SlimSelect('#breed-select', {
       placeholder: 'Select a breed'
@@ -30,58 +31,13 @@ function hideError() {
   error.style.display = 'none';
 }
 
-async function fetchCatByBreed(breedId) {
-  showLoader();
-  hideError();
-
-  try {
-    const response = await axios.get(
-      `https://api.thecatapi.com/v1/images/search?breed_id=${breedId}`
-      
-    );
-    const catData = response.data[0];
-
-    catInfo.innerHTML = `
-      <img src="${catData.url}" alt="Cat Image" class="cat-image">
-      <p><strong>Breed:</strong> ${catData.breeds[0].name}</p>
-      <p><strong>Description:</strong> ${catData.breeds[0].description}</p>
-      <p><strong>Temperament:</strong> ${catData.breeds[0].temperament}</p>
-    `;
-
-    catInfo.style.display = 'block';
-  } catch (error) {
-    showError();
-  }
-
-  hideLoader();
-}
-
-async function fetchBreeds() {
-  showLoader();
-  hideError();
-
-  try {
-    const response = await axios.get('https://api.thecatapi.com/v1/breeds');
-    const breeds = response.data;
-
-    const catsInfo = breeds
-      .map(({ id, name }) => `<option value="${id}">${name}</option>`)
-      .join('');
-    breedSelect.innerHTML = catsInfo;
-
-   
-  } catch (error) {
-    showError();
-  }
-
-  hideLoader();
-}
-
 breedSelect.addEventListener('change', async (event) => {
   const breedId = event.target.value;
   await fetchCatByBreed(breedId);
 });
 
 fetchBreeds();
+
+
 
 
