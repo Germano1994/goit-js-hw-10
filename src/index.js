@@ -1,11 +1,11 @@
+
 import axios from 'axios';
 import SlimSelect from 'slim-select';
-import {fetchBreeds} from "./cat-api";
-import {fetchCatByBreed} from "./cat-api";
+import { fetchBreeds, fetchCatByBreed } from './cat-api';
 
- new SlimSelect('#breed-select', {
-      placeholder: 'Select a breed'
-    });
+new SlimSelect('#breed-select', {
+  placeholder: 'Select a breed',
+});
 
 const breedSelect = document.getElementById('breed-select');
 const loader = document.querySelector('.loader');
@@ -31,13 +31,18 @@ function hideError() {
   error.style.display = 'none';
 }
 
-breedSelect.addEventListener('change', async (event) => {
+let fetchTimeout;
+
+breedSelect.addEventListener('input', async (event) => {
   const breedId = event.target.value;
-  await fetchCatByBreed(breedId);
+
+ 
+  clearTimeout(fetchTimeout);
+
+  
+  fetchTimeout = setTimeout(async () => {
+    await fetchCatByBreed(breedId);
+  }, 500);
 });
 
 fetchBreeds();
-
-
-
-
