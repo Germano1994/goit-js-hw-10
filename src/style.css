@@ -1,3 +1,8 @@
+#breed-select {
+  display: none;
+  margin-bottom: 24px;
+}
+
 .loader-container {
   display: none;
 }
@@ -26,7 +31,7 @@
   color: red;
   font-weight: bold;
   margin: 0;
-  
+
 }
 
 .show-error {
@@ -43,3 +48,4 @@
   width: 400px;
   max-height: 400px;
 }
+

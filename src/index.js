@@ -14,6 +14,7 @@ const loadingMessage = document.querySelector('.loader-container');
 function showLoader() {
   loadingMessage.style.display = 'block';
   breedSelect.disabled = true;
+  hideError();
 }
 
 function hideLoader() {
@@ -32,10 +33,9 @@ function hideError() {
 
 async function getCatByBreed(breedId) {
   showLoader();
-
+  hideError()
 
   if (breedId === "") {
-    hideError();
     catInfo.innerHTML = '';
     hideLoader();
     return;
@@ -66,7 +66,7 @@ async function getBreeds() {
   loadingMessage.style.display = 'block';
 
   const breeds = await fetchBreeds();
-
+  breedSelect.style.display = 'block';
   hideLoader();
 
   if (!breeds || breeds.length === 0) {
