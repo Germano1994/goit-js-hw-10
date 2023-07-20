@@ -1,30 +1,28 @@
-
-import axios from 'axios';
-import SlimSelect from 'slim-select';
 import { fetchBreeds, fetchCatByBreed } from './cat-api';
+import SlimSelect from 'slim-select';
 
 new SlimSelect('#breed-select', {
   placeholder: 'Select a breed',
 });
 
 const breedSelect = document.getElementById('breed-select');
-const loader = document.querySelector('.loader');
 const error = document.getElementById('error');
 const catInfo = document.querySelector('.cat-info');
-
-axios.defaults.headers.common['x-api-key'] =
-  'live_bbSmbWd4LO9F9gCofL8a7JnNnUrFCOQWnS7je4DpFmM1scOOeEW58Q1N4NYsjYvB';
+const loadingMessage = document.querySelector('.loader-container');
 
 
 function showLoader() {
-  loader.style.display = 'block';
+  loadingMessage.style.display = 'block';
+  breedSelect.disabled = true;
 }
 
 function hideLoader() {
-  loader.style.display = 'none';
+  loadingMessage.style.display = 'none';
+  breedSelect.disabled = false;
 }
 
 function showError() {
+  catInfo.innerHTML = '';
   error.style.display = 'block';
 }
 
@@ -32,88 +30,65 @@ function hideError() {
   error.style.display = 'none';
 }
 
-let fetchTimeout;
-
-breedSelect.addEventListener('input', async (event) => {
-  const breedId = event.target.value;
-
- 
-  clearTimeout(fetchTimeout);
-
-  
-  fetchTimeout = setTimeout(async () => {
-    await getCatByBreed(breedId);
-  }, 500);
-});
-
-(async() =>{
-  await getBreeds();
-})();
-
-
-
-
 async function getCatByBreed(breedId) {
   showLoader();
-  hideError();
 
-  try {
-  
-    const catData = await fetchCatByBreed(breedId);
 
-    if (!catData) {
-      clearCatInfo();
-    } else {
-      catInfo.innerHTML = `
+  if (breedId === "") {
+    hideError();
+    catInfo.innerHTML = '';
+    hideLoader();
+    return;
+  }
+
+  const catData = await fetchCatByBreed(breedId);
+  hideLoader();
+
+  if (catData && catData.breeds.length > 0) {
+    catInfo.innerHTML = `
         <img src="${catData.url}" alt="Cat Image" class="cat-image">
         <p><strong>Breed:</strong> ${catData.breeds[0].name}</p>
         <p><strong>Description:</strong> ${catData.breeds[0].description}</p>
         <p><strong>Temperament:</strong> ${catData.breeds[0].temperament}</p>
       `;
 
-      catInfo.style.display = 'block';
-    }
-  } catch (error) {
+    catInfo.style.display = 'block';
+  } else {
     showError();
-    clearCatInfo(); 
   }
-
-  hideLoader();
 }
 
 
 async function getBreeds() {
   showLoader();
   hideError();
-console.log()
-  try {
-    const loadingMessage = document.querySelector('.loading-message');
-    loadingMessage.style.display = 'block';
 
-    
-    const breeds = await fetchBreeds();
+  loadingMessage.style.display = 'block';
 
-    if (!breeds || breeds.length === 0) {
-      breedSelect.innerHTML = '';
-      showError();
-      return;
-    }
-
-    const catsInfo = breeds
-      .map(({ id, name }) => `<option value="${id}">${name}</option>`)
-      .join('');
-    breedSelect.innerHTML = catsInfo;
-
-    breedSelect.style.display = 'block';
-
-    const firstBreedId = breeds[0].id;
-    await fetchCatByBreed(firstBreedId);
-  } catch (error) {
-    showError();
-  } finally {
-    const loadingMessage = document.querySelector('.loading-message');
-    loadingMessage.style.display = 'none';
-  }
+  const breeds = await fetchBreeds();
 
   hideLoader();
+
+  if (!breeds || breeds.length === 0) {
+    showError();
+    return;
+  }
+
+  const catsInfo = breeds.map(({ id, name }) => `<option value="${id}">${name}</option>`);
+  catsInfo.unshift('<option value="">Choise of breed</option>');
+  catsInfo.join('');
+  breedSelect.innerHTML = catsInfo;
 }
+
+let fetchTimeout;
+
+breedSelect.addEventListener('change', async (event) => {
+  const breedId = event.target.value;
+  clearTimeout(fetchTimeout);
+
+  fetchTimeout = setTimeout(async () => {
+    await getCatByBreed(breedId);
+  }, 500);
+});
+
+getBreeds();
